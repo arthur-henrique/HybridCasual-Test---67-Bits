@@ -2,16 +2,17 @@ using UnityEngine;
 
 public class RagdollControl : MonoBehaviour
 {
-    private Animator animator;
-    private Rigidbody[] rigidbodies;
-    private Collider[] colliders;
-    [SerializeField] Collider mainColl;
+    private Animator animator; // Reference to the Animator component
+    private Rigidbody[] rigidbodies; // Array to hold all child Rigidbodies
+    private Collider[] colliders; // Array to hold all child Colliders
+    [SerializeField] private Collider mainColl; // Main collider for the character
 
-    private Vector3 initialPosition;
-    private Quaternion initialRotation;
+    private Vector3 initialPosition; // Initial position of the character
+    private Quaternion initialRotation; // Initial rotation of the character
 
     void Start()
     {
+        // Get references to Animator, Rigidbodies, and Colliders
         animator = GetComponent<Animator>();
         rigidbodies = GetComponentsInChildren<Rigidbody>();
         colliders = GetComponentsInChildren<Collider>();
@@ -41,16 +42,19 @@ public class RagdollControl : MonoBehaviour
 
     private void SetRagdollState(bool state)
     {
+        // Set all child Rigidbodies to kinematic or non-kinematic
         foreach (Rigidbody rb in rigidbodies)
         {
             rb.isKinematic = !state;
         }
 
+        // Enable or disable all child Colliders
         foreach (Collider col in colliders)
         {
             col.enabled = state;
         }
 
+        // Set the main collider to the opposite state of the ragdoll
         mainColl.enabled = !state;
     }
 

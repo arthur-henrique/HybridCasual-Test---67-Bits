@@ -8,25 +8,25 @@ using ETouch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField]
-    private FloatingJoystick joystick;
+    private FloatingJoystick joystick; // The joystick used for player movement
     [SerializeField]
-    private Vector2 joystickSize = new Vector2(300, 300);
+    private Vector2 joystickSize = new Vector2(300, 300); // The size of the joystick
     [SerializeField]
-    private CharacterController controller;
+    private CharacterController controller; // The character controller component
     [SerializeField]
-    private Animator animator;
+    private Animator animator; // The animator component
 
-    private Finger movementFinger;
-    private Vector2 movementInput;
-    private float movementSpeed = 10f;
-    private float currentSpeed = 0f;
-    
+    private Finger movementFinger; // The finger currently used for movement
+    private Vector2 movementInput; // The input vector for movement
+    private float movementSpeed = 10f; // The speed at which the player moves
 
     [SerializeField]
-    private Transform stackParent; // Reference to the StackParent
+    private Transform stackParent; // The parent object for the stack of objects
 
     private float gravity = -9.81f; // Gravity value
-    private float verticalVelocity = 0f; // Vertical velocity
+    private float verticalVelocity = 0f; // Vertical velocity for gravity handling
+
+    // Enable enhanced touch support and subscribe to touch events
     private void OnEnable()
     {
         EnhancedTouchSupport.Enable();
@@ -35,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
         ETouch.onFingerMove += HandleFingerMove;
     }
 
+    // Disable enhanced touch support and unsubscribe from touch events
     private void OnDisable()
     {
         ETouch.onFingerDown -= HandleFingerDown;
@@ -43,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
         EnhancedTouchSupport.Disable();
     }
 
+    // Handle finger movement for joystick control
     private void HandleFingerMove(Finger movedFinger)
     {
         if (movedFinger == movementFinger)
@@ -61,10 +63,10 @@ public class PlayerMovement : MonoBehaviour
             }
             joystick.Knob.anchoredPosition = knobPosition;
             movementInput = knobPosition / maxMovement;
-
         }
     }
 
+    // Handle the loss of a finger from the screen
     private void HandleLoseFinger(Finger lostFinger)
     {
         if (lostFinger == movementFinger)
@@ -76,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Handle the initial touch on the screen
     private void HandleFingerDown(Finger finger)
     {
         if (movementFinger == null)
@@ -88,6 +91,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Clamp the joystick start position to prevent it from going off-screen
     private Vector2 ClampStartPosition(Vector2 startPosition)
     {
         if (startPosition.x < joystickSize.x / 2)
@@ -105,12 +109,13 @@ public class PlayerMovement : MonoBehaviour
         return startPosition;
     }
 
+    // Update is called once per frame
     private void Update()
     {
-        // Create a vector for the movement input
+        // Create a movement vector from the joystick input
         Vector3 move = new Vector3(movementInput.x, 0, movementInput.y);
 
-        if (move.magnitude > 0.1f) // Adjust the threshold as needed
+        if (move.magnitude > 0.1f) // Check if there is significant movement input
         {
             // Ensure move direction is normalized
             move.Normalize();
@@ -131,6 +136,7 @@ public class PlayerMovement : MonoBehaviour
             // Smoothly return StackParent to its original rotation
             stackParent.localRotation = Quaternion.Slerp(stackParent.localRotation, Quaternion.identity, Time.deltaTime * 2f);
         }
+
         // Handle gravity
         if (controller.isGrounded)
         {
@@ -147,9 +153,5 @@ public class PlayerMovement : MonoBehaviour
 
         // Update animator parameters
         animator.SetFloat("Speed", move.magnitude);
-
-       
     }
-
-
 }

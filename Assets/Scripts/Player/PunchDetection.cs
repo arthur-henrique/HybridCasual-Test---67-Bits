@@ -3,24 +3,25 @@ using UnityEngine;
 
 public class PunchDetection : MonoBehaviour
 {
-    public float punchForce = 35f;
-    public Animator animator; // Reference to the player's Animator
-    public Transform player; // Reference to the player's Transform
-    public float rotationSpeed = 10f; // Increase speed of rotation towards the target
+    public float punchForce = 35f; // The force applied to the ragdoll when punched
+    public Animator animator; // The animator component for triggering punch animations
+    public Transform player; // The player transform to rotate towards targets
+    public float rotationSpeed = 10f; // Speed of rotation towards the target
     public float punchCooldown = 1f; // Cooldown time between punches
 
     private bool isPunching = false; // Flag to prevent multiple punches
     private RagdollControl currentRagdoll; // Reference to the current target's ragdoll
-    private NPCScript npcScript;
+    private NPCScript npcScript; // Reference to the NPC script on the target
     private Vector3 punchDirection; // Direction of the punch
     private TargetStacker targetStacker; // Reference to the TargetStacker component
 
+    // Initialize the target stacker reference
     private void Start()
     {
-        // Get the TargetStacker component from the player
         targetStacker = player.GetComponent<TargetStacker>();
     }
 
+    // Handle collision with targets
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Target") && !isPunching)
@@ -29,6 +30,7 @@ public class PunchDetection : MonoBehaviour
         }
     }
 
+    // Handle exiting collision with targets
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Target") && !isPunching)
@@ -39,6 +41,7 @@ public class PunchDetection : MonoBehaviour
         }
     }
 
+    // Coroutine to handle the punch action
     private IEnumerator Punch(Collider target)
     {
         // Trigger the ragdoll effect
@@ -61,11 +64,11 @@ public class PunchDetection : MonoBehaviour
             StartCoroutine(RotateTowardsTarget(targetRotation));
         }
 
-        // Wait for the punch cooldown
         yield return new WaitForSeconds(punchCooldown);
         isPunching = false;
     }
 
+    // Coroutine to smoothly rotate the player towards the target
     private IEnumerator RotateTowardsTarget(Quaternion targetRotation)
     {
         while (Quaternion.Angle(player.rotation, targetRotation) > 0.1f)
@@ -77,7 +80,7 @@ public class PunchDetection : MonoBehaviour
         player.rotation = targetRotation; // Ensure exact rotation
     }
 
-    // Method to be called by the animation event
+    // Method to be called by the animation event to apply the punch force
     public void ApplyPunchForce()
     {
         if (currentRagdoll != null)
@@ -88,7 +91,5 @@ public class PunchDetection : MonoBehaviour
             targetStacker.AddTargetToStack();
             currentRagdoll = null;
         }
-        // Add the target to the stack
-        
     }
 }

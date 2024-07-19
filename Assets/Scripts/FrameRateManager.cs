@@ -4,14 +4,16 @@ using UnityEngine;
 public class FrameRateManager : MonoBehaviour
 {
     [Header("Frame Settings")]
-    int MaxRate = 9999;
     public int TargetFrameRate = 60;
     float currentFrameTime;
     void Awake()
     {
-        //DontDestroyOnLoad(gameObject);
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = TargetFrameRate;
+
+        // To use on more complicated situations
+
+        //DontDestroyOnLoad(gameObject);
         //currentFrameTime = Time.realtimeSinceStartup;
         //StartCoroutine("WaitForNextFrame");
     }
